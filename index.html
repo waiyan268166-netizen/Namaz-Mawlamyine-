@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>မော်လမြိုင် နမားဇ်အချိန်ဇယား</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <!-- မြန်မာစာဖောင့်နှင့် FontAwesome Icons များကို ချိတ်ဆက်ခြင်း -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Layout Compactness & 3-Column Grid Tuning */
+    .main-wrapper {
+      padding: 8px !important;
+    }
+    .header-card {
+      padding: 10px 12px !important;
+      margin-bottom: 8px !important;
+    }
+    .header-card h1 {
+      font-size: 1.05rem !important;
+      margin: 6px 0 2px 0 !important;
+      line-height: 1.6 !important; /* စာကြောင်းမထပ်စေရန် line-height တိုးပေးထားသည် */
+    }
+    .header-card h1 span {
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .header-card .subtitle {
+      font-size: 0.8rem !important;
+      margin-top: 4px !important;
+    }
+    .header-icon {
+      font-size: 1.5rem !important;
+      margin: 4px 0 !important;
+    }
+    .date-card {
+      padding: 8px !important;
+      margin-bottom: 6px !important;
+    }
+    .date-box {
+      font-size: 0.85rem !important;
+      margin-bottom: 4px !important;
+    }
+    .hijri-adjust-container {
+      margin-top: 4px !important;
+    }
+    .adj-btn {
+      padding: 2px 8px !important;
+      font-size: 0.75rem !important;
+    }
+    
+    /* ကုရ်အာန် အာယသ်တော် Card အကွာအဝေး သေးပေးခြင်း */
+    .quran-quote-card {
+      padding: 8px 12px !important;
+      margin-bottom: 10px !important;
+    }
+    .quran-quote-card p {
+      font-size: 0.82rem !important;
+      line-height: 1.5 !important;
+      margin: 4px 0 !important;
+    }
+    .quote-icon {
+      font-size: 1rem !important;
+    }
+    .quote-ref {
+      font-size: 0.75rem !important;
+    }
+
+    .section-title {
+      font-size: 0.9rem !important;
+      margin: 8px 0 6px 0 !important;
+    }
+
+    /* ၁ လိုင်းလျှင် ၃ လ ပေါ်စေရန် Grid ပြင်ဆင်မှု */
+    .month-list {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 6px !important;
+    }
+    .month-card {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 8px 4px !important;
+      text-align: center !important;
+      margin-bottom: 0 !important;
+    }
+    .month-card .badge-box {
+      margin-bottom: 4px !important;
+    }
+    .month-card .month-title {
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+    }
+    .month-card .month-sub {
+      font-size: 0.68rem !important;
+      opacity: 0.8;
+    }
+    .month-card .arrow-icon {
+      display: none !important;
+    }
+
+    /* Modal Viewer Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.92);
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .modal-header {
+      padding: 12px 15px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.6);
+    }
+    .modal-body {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+    .img-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    #modalImg {
+      max-width: 95%;
+      max-height: 85vh;
+      object-fit: contain;
+      transition: transform 0.05s ease-out;
+      transform-origin: center center;
+    }
+    .zoom-controls {
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body class="dark-theme">
+
+  <!-- Top Navigation Bar -->
+  <div class="app-header">
+    <button class="menu-btn" onclick="openNav()"><i class="fa-solid fa-bars"></i></button>
+    <span class="app-title">social media links များ</span>
+  </div>
+
+  <!-- Side Navigation Drawer -->
+  <div id="sideNav" class="sidenav">
+    <div class="sidenav-header">
+      <div class="brand-title">
+        <i class="fa-solid fa-book-quran"></i> social media links များ
+      </div>
+      <button class="close-nav-btn" onclick="closeNav()">&times;</button>
+    </div>
+
+    <div class="sidenav-menu">
+      <div class="sidenav-social">
+        <div class="social-header">Talimulquran Mawlamyine</div>
+        <div class="nav-item social-link yt" onclick="openExternalUrl('https://youtube.com/@TalimulQuranMawlamyine?si=JtP0JEs3fL3S3G5L')">
+          <div class="social-icon-box"><i class="fa-brands fa-youtube"></i></div>
+          <span>YouTube Channel</span>
+          <i class="fa-solid fa-arrow-up-right-from-square external-icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background Overlay -->
+  <div id="navOverlay" class="overlay" onclick="closeNav()"></div>
+
+  <div class="main-wrapper">
+    <header class="header-card">
+      <div class="top-bar">
+        <button class="theme-toggle-btn" onclick="toggleTheme()">
+          <i class="fa-solid fa-circle-half-stroke"></i> <span id="themeLabel">Dark</span>
+        </button>
+      </div>
+
+      <div class="date-card">
+        <div class="date-box">
+          <i class="fa-regular fa-calendar-check icon-emerald"></i>
+          <span id="englishDate">ရက်စွဲ ရယူနေသည်...</span>
+        </div>
+        
+        <div class="date-box islamic-date">
+          <i class="fa-solid fa-moon icon-emerald"></i>
+          <span id="hijriDate">ဟိဂျ်ရီ ရက်စွဲ ရယူနေသည်...</span>
+        </div>
+
+        <div class="hijri-adjust-container">
+          <button class="adj-btn" onclick="adjustHijri(-1)">-၁ ရက်</button>
+
+          <button class="adj-btn" onclick="adjustHijri(1)">+၁ ရက်</button>
+        </div>
+      </div>
+
+      <div class="header-icon">
+        <i class="fa-solid fa-mosque"></i>
+      </div>
+      <h1>မော်လမြိုင်မြို့နှင့် ဆင်ခြေဖုံးရပ်ကွက်များ၏<br><span>အမြဲတမ်း နမားဇ်အချိန်ဇယား</span></h1>
+      <p class="subtitle"><i class="fa-solid fa-clock"></i> အချိန်မှန် နမားဇ် ဖတ်ကြပါစို့</p>
+    </header>
+
+    <div class="quran-quote-card">
+      <i class="fa-solid fa-quote-left quote-icon"></i>
+      <p>"ဧကန်မလွဲ‘ဆွလာသ်’ ဝတ်ပြုမှုသည် ‘မုအ်မင်န်’ တို့အပေါ်၌ အချိန်ကာလပိုင်းခြား၍ အတည် သတ်မှတ်ပြဋ္ဌာန်းထားသော ဖရဇ်တာဝန်တစ်ရပ်ပင် ဖြစ်ချေသတည်း။"</p>
+
+      <span class="quote-ref"><i class="fa-solid fa-book-quran"></i> စူရာဟ် နိစာအ် (၄:၁၀၃)</span>
+    </div>
+
+    <section class="qibla-card" aria-labelledby="qiblaTitle">
+      <div class="qibla-heading">
+        <div class="qibla-icon"><i class="fa-solid fa-kaaba"></i></div>
+        <div>
+          <h2 id="qiblaTitle">ကိဗ်လဟ် ဦးတည်ရာ</h2>
+          <p id="qiblaStatus">သင့်တည်နေရာကို ခွင့်ပြုပြီး ဦးတည်ရာကို တွက်ချက်ပါ</p>
+        </div>
+      </div>
+      <div class="qibla-main">
+        <div class="compass" id="qiblaCompass" aria-label="ကိဗ်လဟ် ဦးတည်ရာ သံလိုက်အိမ်မြှောင်">
+          <span class="compass-north">N</span>
+          <span class="compass-east">E</span>
+          <span class="compass-south">S</span>
+          <span class="compass-west">W</span>
+          <div class="compass-needle" id="qiblaNeedle"><i class="fa-solid fa-location-arrow"></i></div>
+          <div class="compass-center"><i class="fa-solid fa-kaaba"></i></div>
+        </div>
+        <div class="qibla-info">
+          <div class="qibla-degree" id="qiblaDegree">—°</div>
+          <div class="qibla-caption">မြောက်ဘက်မှ ကိဗ်လဟ်ထောင့်</div>
+          <button class="qibla-locate-btn" onclick="findQibla()"><i class="fa-solid fa-location-crosshairs"></i> တည်နေရာရှာမယ်</button>
+        </div>
+      </div>
+      <p class="qibla-note">တိကျသော လမ်းညွှန်ချက်အတွက် Location ခွင့်ပြုပါ။ ဖုန်း၏ Compass Sensor မရရှိပါက ဒီဂရီကို အခြေခံပြီး ဦးတည်ရာကို ချိန်ညှိနိုင်ပါတယ်။</p>
+    </section>
+
+    <div class="section-title">
+      <i class="fa-regular fa-calendar-days"></i> လအလိုက် ကြည့်ရှုရန် ရွေးချယ်ပါ
+    </div>
+
+    <!-- ၁ လိုင်းတွင် ၃ လနှုန်းဖြင့် ပြသသော လများစာရင်း -->
+    <div class="month-list">
+      <div class="month-card" data-month="jan" onclick="openImage('jan.jpg')">
+        <div class="badge-box"><span>၁</span></div>
+        <div class="month-info"><div class="month-title">ဇန်နဝါရီ</div><div class="month-sub">January</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="feb" onclick="openImage('feb.jpg')">
+        <div class="badge-box"><span>၂</span></div>
+        <div class="month-info"><div class="month-title">ဖေဖော်ဝါရီ</div><div class="month-sub">February</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="mar" onclick="openImage('mar.jpg')">
+        <div class="badge-box"><span>၃</span></div>
+        <div class="month-info"><div class="month-title">မတ်</div><div class="month-sub">March</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="apr" onclick="openImage('apr.jpg')">
+        <div class="badge-box"><span>၄</span></div>
+        <div class="month-info"><div class="month-title">ဧပြီ</div><div class="month-sub">April</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="may" onclick="openImage('may.jpg')">
+        <div class="badge-box"><span>၅</span></div>
+        <div class="month-info"><div class="month-title">မေ</div><div class="month-sub">May</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="jun" onclick="openImage('jun.jpg')">
+        <div class="badge-box"><span>၆</span></div>
+        <div class="month-info"><div class="month-title">ဇွန်</div><div class="month-sub">June</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="jul" onclick="openImage('jul.jpg')">
+        <div class="badge-box"><span>၇</span></div>
+        <div class="month-info"><div class="month-title">ဇူလိုင်</div><div class="month-sub">July</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="aug" onclick="openImage('aug.jpg')">
+        <div class="badge-box"><span>၈</span></div>
+        <div class="month-info"><div class="month-title">ဩဂုတ်</div><div class="month-sub">August</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="sep" onclick="openImage('sep.jpg')">
+        <div class="badge-box"><span>၉</span></div>
+        <div class="month-info"><div class="month-title">စက်တင်ဘာ</div><div class="month-sub">September</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="oct" onclick="openImage('oct.jpg')">
+        <div class="badge-box"><span>၁၀</span></div>
+        <div class="month-info"><div class="month-title">အောက်တိုဘာ</div><div class="month-sub">October</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="nov" onclick="openImage('nov.jpg')">
+        <div class="badge-box"><span>၁၁</span></div>
+        <div class="month-info"><div class="month-title">နိုဝင်ဘာ</div><div class="month-sub">November</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+      <div class="month-card" data-month="dec" onclick="openImage('dec.jpg')">
+        <div class="badge-box"><span>၁၂</span></div>
+        <div class="month-info"><div class="month-title">ဒီဇင်ဘာ</div><div class="month-sub">December</div>
+          <span class="current-month-badge" hidden>လက်ရှိလ</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Image Modal Viewer -->
+  <div id="imageModal" class="modal">
+    <div class="modal-header">
+      <span id="modalTitle">အချိန်ဇယား ကြည့်ရှုရန်</span>
+      <button class="close-btn" onclick="closeImage()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="img-wrapper" id="imgWrapper">
+        <img id="modalImg" src="" alt="နမားဇ်အချိန်ဇယား ပုံ">
+      </div>
+    </div>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoomIn()"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom +</button>
+      <button class="zoom-btn" onclick="resetZoom()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      <button class="zoom-btn" onclick="zoomOut()"><i class="fa-solid fa-magnifying-glass-minus"></i> Zoom -</button>
+    </div>
+  </div>
+
+  <script>
+    // Keep the user's Hijri date correction between visits on this device/browser.
+    let hijriAdjustment = Number(localStorage.getItem('hijriAdjustment') || 0);
+    let currentScale = 1;
+    let translateX = 0;
+    let translateY = 0;
+
+    /* Sidenav Controls */
+    function openNav() {
+      document.getElementById("sideNav").classList.add("open");
+      document.getElementById("navOverlay").style.display = "block";
+    }
+
+    function closeNav() {
+      document.getElementById("sideNav").classList.remove("open");
+      document.getElementById("navOverlay").style.display = "none";
+    }
+
+    /* Safe External Link Opener */
+    function openExternalUrl(url) {
+      if (url.startsWith('tg://')) {
+        window.location.href = url;
+      } else {
+        window.open(url, '_blank');
+      }
+    }
+
+    /* Native Share Functionality */
+    function shareApp() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'မော်လမြိုင် နမားဇ်အချိန်ဇယား',
+          text: 'မော်လမြိုင်မြို့နှင့် ဆင်ခြေဖုံးရပ်ကွက်များ၏ အမြဲတမ်း နမားဇ်အချိန်ဇယား အက်ပလီကေးရှင်း',
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        alert('အက်ပ် လင့်ခ်: ' + window.location.href);
+      }
+    }
+
+    /* Hijri Date Calculation */
+    function getHijriDate(date) {
+      const adjustedDate = new Date(date);
+      adjustedDate.setDate(adjustedDate.getDate() + hijriAdjustment);
+
+      const gday = adjustedDate.getDate();
+      const gmonth = adjustedDate.getMonth();
+      const gyear = adjustedDate.getFullYear();
+
+      let m = gmonth + 1;
+      let y = gyear;
+      if (m < 3) { y -= 1; m += 12; }
+
+      let a = Math.floor(y / 100);
+      let b = 2 - a + Math.floor(a / 4);
+      let jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + gday + b - 1524;
+
+      let l = jd - 1948440 + 10632;
+      let n = Math.floor((l - 1) / 10631);
+      l = l - 10631 * n + 354;
+
+      let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) + (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
+      l = l - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
+      
+      let month = Math.floor((24 * l) / 709);
+      let day = Math.floor(l - Math.floor((709 * month) / 24));
+      let year = 30 * n + j - 30;
+
+      const islamicMonths = [
+        "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
+        "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
+        "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
+      ];
+
+      return `${day} ${islamicMonths[month - 1]} ${year} AH`;
+    }
+
+    function updateDates() {
+      const today = new Date();
+      const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+      const englishDateStr = today.toLocaleDateString('en-GB', options);
+      
+      const engElem = document.getElementById('englishDate');
+      if(engElem) engElem.innerText = englishDateStr;
+
+      const hijriDateStr = getHijriDate(today);
+      const hijriElem = document.getElementById('hijriDate');
+      if(hijriElem) hijriElem.innerText = "Hijri: " + hijriDateStr;
+    }
+
+    function adjustHijri(days) {
+      hijriAdjustment += days;
+      localStorage.setItem('hijriAdjustment', String(hijriAdjustment));
+      updateDates();
+    }
+
+    /* Theme Toggle */
+    function toggleTheme() {
+      const body = document.body;
+      const themeLabel = document.getElementById('themeLabel');
+
+      if (body.classList.contains('dark-theme')) {
+        body.classList.remove('dark-theme');
+        body.classList.add('light-theme');
+        themeLabel.innerText = 'Light';
+        localStorage.setItem('namazTheme', 'light');
+      } else {
+        body.classList.remove('light-theme');
+        body.classList.add('dark-theme');
+        themeLabel.innerText = 'Dark';
+        localStorage.setItem('namazTheme', 'dark');
+      }
+    }
+
+    // Restore the selected theme on later visits.
+    (function restoreTheme() {
+      const savedTheme = localStorage.getItem('namazTheme');
+      const body = document.body;
+      const themeLabel = document.getElementById('themeLabel');
+      if (savedTheme === 'light') {
+        body.classList.remove('dark-theme');
+        body.classList.add('light-theme');
+        if (themeLabel) themeLabel.innerText = 'Light';
+      } else {
+        body.classList.remove('light-theme');
+        body.classList.add('dark-theme');
+        if (themeLabel) themeLabel.innerText = 'Dark';
+      }
+    })();
+
+    /* Image View & Zoom Controls */
+    function updateTransform() {
+      const img = document.getElementById('modalImg');
+      if (img) {
+        img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+      }
+    }
+
+    function zoomIn() {
+      if (currentScale < 5) {
+        currentScale += 0.5;
+        updateTransform();
+      }
+    }
+
+    function zoomOut() {
+      if (currentScale > 1) {
+        currentScale -= 0.5;
+        if (currentScale === 1) { translateX = 0; translateY = 0; }
+        updateTransform();
+      }
+    }
+
+    function resetZoom() {
+      currentScale = 1; translateX = 0; translateY = 0;
+      updateTransform();
+    }
+
+    function openImage(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImg');
+      if(modal && modalImg) {
+        modalImg.src = imgSrc;
+        modal.style.display = 'flex';
+        resetZoom();
+      }
+    }
+
+    function closeImage() {
+      const modal = document.getElementById('imageModal');
+      if(modal) {
+        modal.style.display = 'none';
+        resetZoom();
+      }
+    }
+
+    /* Touch & Drag Logic */
+    const modalBody = document.getElementById('modalBody');
+    let initialDistance = 0;
+    let initialScale = 1;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    modalBody.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        isDragging = false;
+        initialDistance = Math.hypot(
+          e.touches[0].pageX - e.touches[1].pageX,
+          e.touches[0].pageY - e.touches[1].pageY
+        );
+        initialScale = currentScale;
+      } else if (e.touches.length === 1 && currentScale > 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX - translateX;
+        startY = e.touches[0].clientY - translateY;
+      }
+    }, { passive: true });
+
+    modalBody.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        const currentDistance = Math.hypot(
+          e.touches[0].pageX - e.touches[1].pageX,
+          e.touches[0].pageY - e.touches[1].pageY
+        );
+        if (initialDistance > 0) {
+          let scaleFactor = currentDistance / initialDistance;
+          currentScale = Math.min(Math.max(initialScale * scaleFactor, 1), 5);
+          updateTransform();
+        }
+      } else if (e.touches.length === 1 && isDragging && currentScale > 1) {
+        translateX = e.touches[0].clientX - startX;
+        translateY = e.touches[0].clientY - startY;
+        updateTransform();
+      }
+    }, { passive: true });
+
+    modalBody.addEventListener('touchend', function(e) {
+      if (e.touches.length < 2) {
+        initialDistance = 0;
+      }
+      if (e.touches.length === 0) {
+        isDragging = false;
+      }
+    });
+
+    // Desktop Mouse Drag Events
+    modalBody.addEventListener('mousedown', function(e) {
+      if (currentScale > 1) {
+        isDragging = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+      }
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      if (isDragging && currentScale > 1) {
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        updateTransform();
+      }
+    });
+
+    window.addEventListener('mouseup', function() {
+      isDragging = false;
+    });
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('imageModal');
+      if (event.target == modal) { closeImage(); }
+    };
+
+    // Mark the current Gregorian month without adding a daily banner image.
+    function markCurrentMonth() {
+      const currentMonth = new Date().getMonth();
+      document.querySelectorAll('.month-card').forEach((card, index) => {
+        const isCurrent = index === currentMonth;
+        card.classList.toggle('current-month', isCurrent);
+        const badge = card.querySelector('.current-month-badge');
+        if (badge) badge.hidden = !isCurrent;
+      });
+    }
+
+    // Qibla direction from the user's current coordinates to the Kaaba.
+    let qiblaBearing = 284.9; // ခန့်မှန်း မော်လမြိုင်မြို့အတွက် default direction
+    let deviceHeading = 0;
+    function bearingToKaaba(lat, lon) {
+      const kaabaLat = 21.422487 * Math.PI / 180;
+      const kaabaLon = 39.826206 * Math.PI / 180;
+      const userLat = lat * Math.PI / 180;
+      const userLon = lon * Math.PI / 180;
+      const dLon = kaabaLon - userLon;
+      const y = Math.sin(dLon) * Math.cos(kaabaLat);
+      const x = Math.cos(userLat) * Math.sin(kaabaLat) - Math.sin(userLat) * Math.cos(kaabaLat) * Math.cos(dLon);
+      return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    }
+    function renderQibla() {
+      const degree = document.getElementById('qiblaDegree');
+      const needle = document.getElementById('qiblaNeedle');
+      if (qiblaBearing === null) return;
+      if (degree) degree.textContent = Math.round(qiblaBearing) + '°';
+      if (needle) needle.style.transform = `rotate(${qiblaBearing - deviceHeading}deg)`;
+    }
+    function findQibla() {
+      const status = document.getElementById('qiblaStatus');
+      if (!navigator.geolocation) {
+        if (status) status.textContent = 'ဤ Browser တွင် တည်နေရာရှာဖွေမှု မရရှိပါ။';
+        return;
+      }
+      if (status) status.textContent = 'တည်နေရာ ရယူနေသည်...';
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        qiblaBearing = bearingToKaaba(lat, lon);
+        if (status) status.textContent = 'သင့်တည်နေရာအပေါ် မူတည်၍ ကိဗ်လဟ်ဦးတည်ရာ တွက်ချက်ပြီးပါပြီ။';
+        renderQibla();
+      }, () => {
+        if (status) status.textContent = 'Location ခွင့်ပြုချက်မရပါ။ Browser Settings မှ ခွင့်ပြုပြီး ထပ်စမ်းပါ။';
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 });
+    }
+    function handleOrientation(event) {
+      let heading = null;
+      if (typeof event.webkitCompassHeading === 'number') heading = event.webkitCompassHeading;
+      else if (typeof event.alpha === 'number') heading = 360 - event.alpha;
+      if (heading !== null) { deviceHeading = heading; renderQibla(); }
+    }
+    if ('DeviceOrientationEvent' in window) {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+
+    markCurrentMonth();
+    renderQibla();
+    updateDates();
+  </script>
+</body>
+</html>
